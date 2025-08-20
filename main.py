@@ -1,4 +1,3 @@
-import asyncio
 import pygame as pg
 import sys
 
@@ -27,18 +26,14 @@ transcript, turn_number = '', 0
 
 # --- FONT FINDER HELPER FUNCTION ---
 def find_system_font():
-    try:
-        # Try to find system fonts (this will likely fail in pygbag)
-        font_preferences = ["dejavusans", "segoeuisymbol", "freeserif"]
-        available_fonts = pg.font.get_fonts()
-        for pref_font in font_preferences:
-            if pref_font in available_fonts:
-                return pg.font.match_font(pref_font)
-    except:
-        pass
-    
-    # Fallback to None (pygame's default font)
-    print("Using pygame default font")
+    """Searches for a system font that supports chess characters."""
+    font_preferences = ["dejavusans", "segoeuisymbol", "freeserif", "arialunicode", "symbola"]
+    available_fonts = pg.font.get_fonts()
+    for pref_font in font_preferences:
+        if pref_font in available_fonts:
+            print(f"Using system font: {pref_font}")
+            return pg.font.match_font(pref_font)
+    print("Warning: No suitable system font found for chess symbols. Falling back to default.")
     return None
 
 # --- PIECE CLASS DEFINITIONS ---
@@ -292,15 +287,7 @@ def draw_check_highlight(screen, kings, flipped, turn, checkmate, offset_x):
     pg.draw.circle(screen, color, center_pos, 25, width=3)
 
 # --- MAIN GAME LOOP ---
-import asyncio
-import pygame as pg
-import sys
-
-# [Keep all your existing constants, classes, and helper functions exactly as they are]
-# I'm only showing the changes needed to your main() function
-
-# --- MAIN GAME LOOP (FIXED FOR PYGBAG) ---
-async def main():  # <- ADD async here
+def main():
     pg.init()
     pg.font.init()
     clock = pg.time.Clock()
@@ -401,12 +388,7 @@ async def main():  # <- ADD async here
             
         draw_turn_indicator_dot(screen, turn)
         pg.display.update()
-        
-        # CRITICAL: Add this line - required for pygbag
-        await asyncio.sleep(0)
-        
         clock.tick(60)
 
-# CRITICAL: Change this line
 if __name__ == '__main__':
-    asyncio.run(main())
+    main()

@@ -50,9 +50,14 @@ jobs:
         ls -la build/ || echo "Build directory not found"
         ls -la build/web/ || echo "Web directory not found"
         
-    - name: Deploy to GitHub Pages
-      uses: JamesIves/github-pages-deploy-action@v4.4.3
+    - name: Setup Pages
+      uses: actions/configure-pages@v3
+      
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v2
       with:
-        branch: gh-pages
-        folder: build/web
-        clean: true
+        path: build/web
+        
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v2

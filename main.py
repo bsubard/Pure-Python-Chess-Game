@@ -288,7 +288,15 @@ def draw_check_highlight(screen, kings, flipped, turn, checkmate, offset_x):
     pg.draw.circle(screen, color, center_pos, 25, width=3)
 
 # --- MAIN GAME LOOP ---
-def main():
+import asyncio
+import pygame as pg
+import sys
+
+# [Keep all your existing constants, classes, and helper functions exactly as they are]
+# I'm only showing the changes needed to your main() function
+
+# --- MAIN GAME LOOP (FIXED FOR PYGBAG) ---
+async def main():  # <- ADD async here
     pg.init()
     pg.font.init()
     clock = pg.time.Clock()
@@ -389,7 +397,12 @@ def main():
             
         draw_turn_indicator_dot(screen, turn)
         pg.display.update()
+        
+        # CRITICAL: Add this line - required for pygbag
+        await asyncio.sleep(0)
+        
         clock.tick(60)
 
+# CRITICAL: Change this line
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())

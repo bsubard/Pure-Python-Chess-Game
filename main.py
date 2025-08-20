@@ -27,14 +27,18 @@ transcript, turn_number = '', 0
 
 # --- FONT FINDER HELPER FUNCTION ---
 def find_system_font():
-    """Searches for a system font that supports chess characters."""
-    font_preferences = ["dejavusans", "segoeuisymbol", "freeserif", "arialunicode", "symbola"]
-    available_fonts = pg.font.get_fonts()
-    for pref_font in font_preferences:
-        if pref_font in available_fonts:
-            print(f"Using system font: {pref_font}")
-            return pg.font.match_font(pref_font)
-    print("Warning: No suitable system font found for chess symbols. Falling back to default.")
+    try:
+        # Try to find system fonts (this will likely fail in pygbag)
+        font_preferences = ["dejavusans", "segoeuisymbol", "freeserif"]
+        available_fonts = pg.font.get_fonts()
+        for pref_font in font_preferences:
+            if pref_font in available_fonts:
+                return pg.font.match_font(pref_font)
+    except:
+        pass
+    
+    # Fallback to None (pygame's default font)
+    print("Using pygame default font")
     return None
 
 # --- PIECE CLASS DEFINITIONS ---

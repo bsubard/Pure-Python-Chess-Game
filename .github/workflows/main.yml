@@ -1,28 +1,58 @@
-name: Build Space Invaders with Pygbag
+name: Build and Deploy Pygame Game to GitHub Pages
+
 on:
   push:
     branches:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
-  build-pygbag:
-    name: Sandy Inspires - Space Invaders Game
+  build-and-deploy:
+    name: Build Pygame Game with Pygbag
     runs-on: ubuntu-latest
-
+    
     steps:
-    - uses: actions/checkout@v2
-    - name: Checkout
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install pygbag
       run: |
-            echo "Attempting to install pygbag"
-            python -m pip install pygbag
-            echo "Successfully installed pygbag"
-            echo "Attempting to build the game"
-            python -m pygbag --build $GITHUB_WORKSPACE/space_invaders/main.py
-            echo "Successfully build the game and complied to WebAssembly"
-
-    - name : "Upload to GitHub pages branch gh-pages"
-      uses: JamesIves/github-pages-deploy-action@4.1.7
+        echo "Installing pygbag..."
+        python -m pip install --upgrade pip
+        python -m pip install pygbag
+        echo "Successfully installed pygbag"
+        
+    - name: Check file structure
+      run: |
+        echo "Checking file structure..."
+        ls -la $GITHUB_WORKSPACE/
+        
+    - name: Build game with pygbag
+      run: |
+        echo "Building the game..."
+        cd $GITHUB_WORKSPACE
+        python -m pygbag --verbose --build main.py
+        echo "Successfully built the game and compiled to WebAssembly"
+        
+    - name: Check build output
+      run: |
+        echo "Checking build output..."
+        ls -la build/ || echo "Build directory not found"
+        ls -la build/web/ || echo "Web directory not found"
+        
+    - name: Deploy to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@v4.4.3
       with:
         branch: gh-pages
-        folder: space_invaders/build/web
+        folder: build/web
+        clean: true

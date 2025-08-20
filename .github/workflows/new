@@ -1,0 +1,63 @@
+name: Build and Deploy Pygame Game to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    name: Build Pygame Game with Pygbag
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install pygbag
+      run: |
+        echo "Installing pygbag..."
+        python -m pip install --upgrade pip
+        python -m pip install pygbag
+        echo "Successfully installed pygbag"
+        
+    - name: Check file structure
+      run: |
+        echo "Checking file structure..."
+        ls -la $GITHUB_WORKSPACE/
+        
+    - name: Build game with pygbag
+      run: |
+        echo "Building the game..."
+        cd $GITHUB_WORKSPACE
+        python -m pygbag --build main.py
+        echo "Successfully built the game and compiled to WebAssembly"
+        
+    - name: Check build output
+      run: |
+        echo "Checking build output..."
+        ls -la build/ || echo "Build directory not found"
+        ls -la build/web/ || echo "Web directory not found"
+        
+    - name: Setup Pages
+      uses: actions/configure-pages@v3
+      
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v2
+      with:
+        path: build/web
+        
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v2

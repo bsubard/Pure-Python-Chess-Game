@@ -41,7 +41,7 @@ jobs:
       run: |
         echo "Building the game..."
         cd $GITHUB_WORKSPACE
-        python -m pygbag --verbose --build main.py
+        python -m pygbag --build main.py
         echo "Successfully built the game and compiled to WebAssembly"
         
     - name: Check build output
